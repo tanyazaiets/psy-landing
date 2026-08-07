@@ -12,7 +12,7 @@ export default function PricingAndUpsell() {
   ];
 
   return (
-    <section className="bg-bg-card text-text-primary py-12 md:py-20 px-4 border-t border-sage/10 space-y-16 md:space-y-24">
+    <section className="bg-bg-main text-text-primary py-12 md:py-20 px-4 border-t border-accent/10 space-y-16 md:space-y-24">
       <div className="max-w-3xl mx-auto space-y-16 md:space-y-20">
         
         {/* Блоки 7 та 8: Вартість та що буде після покупки */}
@@ -21,12 +21,12 @@ export default function PricingAndUpsell() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="bg-bg-main p-6 sm:p-10 rounded-3xl border border-sage/20 text-center shadow-sm relative overflow-hidden"
+          className="bg-bg-card p-6 sm:p-10 rounded-3xl border border-sage/20 text-center shadow-sm relative overflow-hidden"
         >
           <span className="text-xs font-semibold tracking-wider uppercase text-sage mb-2 block">
             Швидкий старт
           </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-2">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-black mb-2">
             Отримати практичний посібник
           </h2>
           <p className="text-sm sm:text-base text-text-secondary mb-6">
@@ -43,7 +43,7 @@ export default function PricingAndUpsell() {
           </button>
 
           {/* Блок 8: Що буде після покупки */}
-          <div className="bg-bg-card p-4 rounded-2xl border border-sage/15 flex items-center justify-center gap-3 text-left max-w-lg mx-auto">
+          <div className="bg-bg-main p-4 rounded-2xl border border-sage/15 flex items-center justify-center gap-3 text-left max-w-lg mx-auto">
             <Download className="w-5 h-5 text-sage shrink-0" />
             <p className="text-xs sm:text-sm text-text-secondary leading-snug">
               Одразу після оплати ви <strong className="text-text-primary font-medium">автоматично отримаєте PDF-файл</strong> і зможете користуватися ним у будь-який зручний час.
@@ -57,7 +57,7 @@ export default function PricingAndUpsell() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-bg-main p-6 sm:p-8 rounded-3xl border-2 border-accent/20 relative overflow-hidden shadow-sm"
+          className="bg-bg-card p-6 sm:p-8 rounded-3xl border-2 border-accent/20 relative overflow-hidden shadow-sm"
         >
           <div className="flex items-center gap-2 text-accent mb-3">
             
@@ -81,7 +81,7 @@ export default function PricingAndUpsell() {
             ))}
           </ul>
 
-          <button className="w-full sm:w-auto bg-bg-card hover:bg-sage/10 text-text-primary border border-sage/30 font-medium px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+          <button className="w-full sm:w-auto bg-bg-main hover:bg-sage/10 text-text-primary border border-sage/30 font-medium px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
             <MessageCircle className="w-4 h-4 text-sage" />
             Дізнатися про супровід
           </button>

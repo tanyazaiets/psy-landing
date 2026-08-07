@@ -6,7 +6,7 @@ import { UserCheck } from "lucide-react";
 
 export default function AboutAuthor() {
   return (
-    <section className="bg-bg-main text-text-primary py-12 md:py-20 px-4 border-t border-sage/10">
+    <section className="bg-bg-main text-text-primary py-12 md:py-20 px-4 border-t border-accent/10">
       <div className="max-w-4xl mx-auto">
         
         {/* Заголовок */}
@@ -17,10 +17,7 @@ export default function AboutAuthor() {
           transition={{ duration: 0.5 }}
           className="text-center mb-8 md:mb-12"
         >
-          <span className="text-xs font-semibold tracking-wider uppercase text-sage mb-2 block">
-            Експертність
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-black">
             Про авторку
           </h2>
         </motion.div>
@@ -36,7 +33,7 @@ export default function AboutAuthor() {
           {/* Фото авторки */}
           <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 shrink-0 rounded-2xl overflow-hidden border-2 border-sage/20 shadow-md">
             <Image
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop"
+              src="/author.jpg"
               alt="Тетяна — контент-стратег"
               fill
               className="object-cover"

@@ -5,7 +5,7 @@ import { Quote } from "lucide-react";
 
 export default function WhyThisGuide() {
   return (
-    <section className="bg-bg-main text-text-primary py-12 md:py-20 px-4">
+    <section className="bg-bg-main text-text-primary py-12 md:py-20 px-4 border-t border-accent/10">
       <div className="max-w-3xl mx-auto">
         
         {/* Заголовок */}
@@ -16,7 +16,7 @@ export default function WhyThisGuide() {
           transition={{ duration: 0.5 }}
           className="text-center mb-8 md:mb-12"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-black">
             Чому цей посібник
           </h2>
         </motion.div>

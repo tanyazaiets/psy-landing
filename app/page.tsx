@@ -11,11 +11,13 @@ export default function Home() {
     <main className="min-h-screen flex flex-col justify-between">
       <div>
         <Hero />
-        <ForWhom />
-        <WhyThisGuide />
-        <ContentAndResults />
-        <AboutAuthor />
-        <PricingAndUpsell />
+        <div className="w-full lg:px-[20%]">
+          <ForWhom />
+          <WhyThisGuide />
+          <ContentAndResults />
+          <AboutAuthor />
+          <PricingAndUpsell />
+        </div>
       </div>
       <Footer />
     </main>
