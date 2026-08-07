@@ -6,9 +6,9 @@ import Image from "next/image";
 
 export default function Hero() {
   const benefits = [
-    "55 готових тем",
-    "Логіка прийняття рішення клієнтом",
-    "Практичні рекомендації для створення контенту",
+    "55 готових тем.",
+    "Логіка прийняття рішення клієнтом.",
+    "Практичні рекомендації для створення контенту.",
   ];
 
   return (
@@ -27,14 +27,14 @@ export default function Hero() {
       </div>
 
       {/* Текстовий блок - жорстко зафіксований у верхній зоні екрану */}
-      <div className="absolute top-[15%] sm:top-[12%] md:top-[8%] lg:top-[12%] left-1/2 -translate-x-1/2 z-10 w-full max-w-4xl px-4 text-center flex flex-col items-center">
+      <div className="absolute top-[12%] sm:top-[10%] md:top-[8%] lg:top-[12%] left-1/2 -translate-x-1/2 z-10 w-full max-w-4xl px-4 text-center flex flex-col items-center gap-3 sm:gap-0">
 
         {/* Кетч-фраза / Бейдж */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-[clamp(10px,1.5vmin,14px)] font-bold text-black uppercase tracking-wider mb-2 md:mb-3 transform -translate-y-[15%]"
+          className="text-[clamp(10px,1.5vmin,14px)] font-bold text-black uppercase tracking-wider mb-2 md:mb-3"
         >
           Практичний посібник для психологів, психотерапевтів і коучів
         </motion.div>
@@ -44,7 +44,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-[clamp(1.75rem,5.5vmin,3.75rem)] font-black tracking-tight mb-3 md:mb-4 leading-[1.1] text-black transform translate-y-[85%] sm:translate-y-[5%]"
+          className="text-[clamp(1.75rem,5.5vmin,3.75rem)] font-black tracking-tight mb-3 md:mb-4 leading-[1.1] text-black"
         >
           Як вести блог зрозуміло, етично та без маніпуляцій
         </motion.h1>
@@ -54,7 +54,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-[clamp(0.875rem,2vmin,1.25rem)] text-black font-semibold max-w-2xl mb-4 leading-[1.4] transform translate-y-[95%] sm:translate-y-0"
+          className="text-[clamp(0.875rem,2vmin,1.25rem)] text-black font-semibold max-w-2xl mb-4 leading-[1.4] px-6 sm:px-0 mt-2 sm:mt-0"
         >
           Створюйте контент, у якому потенційні клієнти впізнаватимуть себе та формуватимуть довіру до вашої практики.
         </motion.p>
@@ -73,7 +73,7 @@ export default function Hero() {
           {benefits.map((item, index) => (
             <div key={index} className="flex items-center gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-black shrink-0" />
-              <span className="text-[11px] sm:text-xs md:text-sm font-bold text-black text-left">{item}</span>
+              <span className="text-[11px] sm:text-xs md:text-sm font-bold text-black text-left whitespace-normal break-words">{item}</span>
             </div>
           ))}
         </div>
