@@ -127,7 +127,7 @@ export default function ContentAndResults() {
                 <div className="bg-accent/10 p-1.5 rounded-full text-accent shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
                   <Check className="w-4 h-4 stroke-[3]" />
                 </div>
-                <p className="text-xs min-[380px]:text-sm sm:text-base font-bold text-text-primary whitespace-nowrap">
+                <p className="text-xs min-[380px]:text-sm sm:text-base font-bold text-text-primary">
                   {item}
                 </p>
               </motion.div>
