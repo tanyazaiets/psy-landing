@@ -90,7 +90,7 @@ export default function PricingAndUpsell() {
                 placeholder="наприклад, Сергій"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-bg-main border border-sage/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
+                className="w-full bg-bg-main border border-sage/30 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-accent transition-colors"
               />
             </div>
 
@@ -104,7 +104,7 @@ export default function PricingAndUpsell() {
                 placeholder="+380 (97) 000-00-00"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full bg-bg-main border border-sage/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
+                className="w-full bg-bg-main border border-sage/30 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-accent transition-colors"
               />
             </div>
 
@@ -117,7 +117,7 @@ export default function PricingAndUpsell() {
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-bg-main border border-sage/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors"
+                className="w-full bg-bg-main border border-sage/30 rounded-xl px-4 py-3 text-base focus:outline-none focus:border-accent transition-colors"
               />
             </div>
 
