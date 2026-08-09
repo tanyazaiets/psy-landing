@@ -107,8 +107,10 @@ export async function handleTelegramUpdate(update: any) {
         }
 
         const session = orderData || userSessions.get(chatId) || {};
-        // Пріоритет: ім'я з форми сайту → ім'я в Telegram → запасне
-        const clientName = session.name || msg.from?.first_name || "Колего";
+        
+        // Привітання бота беремо ЛИШЕ з профілю Telegram (або просто "Вітаю!")
+        const tgName = msg.from?.first_name ? escapeHtml(msg.from.first_name) : "";
+        const greetingLine = tgName ? `<b>Вітаю, ${tgName}!</b>\n\n` : `<b>Вітаю!</b>\n\n`;
 
         // Видаляємо кнопки зі всіх старих повідомлень у цьому чаті (5 останніх)
         // щоб не лишалась «приведена» кнопка «Надіслати квитанцію» від попередніх версій бота
@@ -119,7 +121,7 @@ export async function handleTelegramUpdate(update: any) {
         } catch (_) {}
 
         const welcomeText = 
-          `<b>Вітаю, ${escapeHtml(clientName)}!</b>\n\n` +
+          greetingLine +
           `Дякуємо за замовлення <b>Практичного посібника з ведення блогу</b>.\n\n` +
           `💳 <b>Реквізити для оплати (9 $ / 370 грн):</b>\n` +
           `• <b>ФОП:</b> Тетяна\n` +
@@ -134,26 +136,14 @@ export async function handleTelegramUpdate(update: any) {
       // Квитанція (фото чи файл)
       if (msg.photo || msg.document) {
         const session = userSessions.get(chatId) || {};
-        const clientName = session.name || msg.from?.first_name || "Покупець";
-        const clientPhone = session.phone || "Не вказано";
-        const clientEmail = session.email || "Не вказано";
-
+        
         await sendTelegramMessage(
           chatId,
           "<b>Дякуємо!</b> Квитанцію отримано та передано на перевірку.\nОчікуйте на підтвердження (зазвичай це займає 3–10 хвилин)."
         );
 
-        const tgUser = msg.from?.username 
-          ? `@${msg.from.username}` 
-          : `${msg.from?.first_name || ""} ${msg.from?.last_name || ""}`.trim() || "невідомо";
-
         const caption = 
           `🧾 <b>НОВА КВИТАНЦІЯ ПРО ОПЛАТУ!</b>\n\n` +
-          `👤 <b>Покупець:</b> ${escapeHtml(clientName)}\n` +
-          `✈️ <b>Telegram:</b> ${escapeHtml(tgUser)}\n` +
-          `📞 <b>Телефон:</b> ${escapeHtml(clientPhone)}\n` +
-          `✉️ <b>Email:</b> ${escapeHtml(clientEmail)}\n` +
-          `🆔 <b>ID замовлення:</b> <code>${session.orderId || "не вказано"}</code>\n\n` +
           `Перевірте платіж у банкінгу та натисніть підтвердження 👇`;
 
         const keyboard = {
