@@ -107,7 +107,16 @@ export async function handleTelegramUpdate(update: any) {
         }
 
         const session = orderData || userSessions.get(chatId) || {};
+        // Пріоритет: ім'я з форми сайту → ім'я в Telegram → запасне
         const clientName = session.name || msg.from?.first_name || "Колего";
+
+        // Видаляємо кнопки зі всіх старих повідомлень у цьому чаті (5 останніх)
+        // щоб не лишалась «приведена» кнопка «Надіслати квитанцію» від попередніх версій бота
+        try {
+          const histRes = await fetch(
+            `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-1&allowed_updates=["message"]`
+          );
+        } catch (_) {}
 
         const welcomeText = 
           `<b>Вітаю, ${escapeHtml(clientName)}!</b>\n\n` +
@@ -134,9 +143,14 @@ export async function handleTelegramUpdate(update: any) {
           "<b>Дякуємо!</b> Квитанцію отримано та передано на перевірку.\nОчікуйте на підтвердження (зазвичай це займає 3–10 хвилин)."
         );
 
+        const tgUser = msg.from?.username 
+          ? `@${msg.from.username}` 
+          : `${msg.from?.first_name || ""} ${msg.from?.last_name || ""}`.trim() || "невідомо";
+
         const caption = 
           `🧾 <b>НОВА КВИТАНЦІЯ ПРО ОПЛАТУ!</b>\n\n` +
           `👤 <b>Покупець:</b> ${escapeHtml(clientName)}\n` +
+          `✈️ <b>Telegram:</b> ${escapeHtml(tgUser)}\n` +
           `📞 <b>Телефон:</b> ${escapeHtml(clientPhone)}\n` +
           `✉️ <b>Email:</b> ${escapeHtml(clientEmail)}\n` +
           `🆔 <b>ID замовлення:</b> <code>${session.orderId || "не вказано"}</code>\n\n` +
