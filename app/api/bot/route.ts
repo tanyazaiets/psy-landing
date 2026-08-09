@@ -6,13 +6,16 @@ import { ordersStore } from "../order/route";
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID;
 
-// Зберігаємо контекст у globalThis для виключення дублювання при перезавантаженнях Next.js
+// Унікальний ID поточного запуску модуля (запобігає дублюванню при гарячому перезавантаженні)
+const RUN_ID = Math.random();
+
+// Зберігаємо сесії користувачів у globalThis для стабільності
 const globalForSessions = globalThis as unknown as {
   userSessions?: Map<number, { orderId?: string; name?: string; phone?: string; email?: string }>;
   processedUpdates?: Set<number>;
   processedCallbacks?: Set<string>;
   lastUpdateId?: number;
-  isPolling?: boolean;
+  currentRunId?: number;
 };
 
 export const userSessions = globalForSessions.userSessions || new Map<number, { orderId?: string; name?: string; phone?: string; email?: string }>();
@@ -24,12 +27,21 @@ globalForSessions.processedUpdates = processedUpdates;
 const processedCallbacks = globalForSessions.processedCallbacks || new Set<string>();
 globalForSessions.processedCallbacks = processedCallbacks;
 
+let isPollingInThisInstance = false;
+
+// Запуск Polling для локальної розробки
 export function ensurePollingStarted() {
-  if (globalForSessions.isPolling || !BOT_TOKEN) return;
-  globalForSessions.isPolling = true;
+  if (!BOT_TOKEN) return;
+
+  // Оновлюємо глобальний ID активного запуску
+  globalForSessions.currentRunId = RUN_ID;
+
+  // Якщо цей конкретний модуль вже запустив опитування, повторно не запускаємо
+  if (isPollingInThisInstance) return;
+  isPollingInThisInstance = true;
 
   (async () => {
-    // При першому запуску отримуємо останній update_id, щоб пропустити стару чергу
+    // При першому запуску зчитуємо останній оновлений ID, щоб не брати стару чергу
     try {
       const initRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-1`);
       const initData = await initRes.json();
@@ -40,7 +52,8 @@ export function ensurePollingStarted() {
       console.error("Init update offset error:", e);
     }
 
-    while (globalForSessions.isPolling) {
+    // Працює тільки найсвіжіший потік коду
+    while (globalForSessions.currentRunId === RUN_ID) {
       try {
         const offset = (globalForSessions.lastUpdateId || 0) + 1;
         const response = await fetch(
@@ -155,7 +168,6 @@ export async function handleTelegramUpdate(update: any) {
       const callback = update.callback_query;
       const callbackId = callback.id;
 
-      // Захист від повторної обробки того самого натискання кнопки
       if (processedCallbacks.has(callbackId)) {
         return;
       }
