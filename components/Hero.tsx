@@ -92,7 +92,10 @@ export default function Hero() {
             <span className="text-2xl sm:text-3xl font-extrabold text-black">9 $</span>
           </div>
 
-          <button className="bg-accent hover:bg-accent-hover text-white font-bold text-[11px] sm:text-sm px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-[0.98] shrink-0">
+          <button 
+            onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+            className="bg-accent hover:bg-accent-hover text-white font-bold text-[11px] sm:text-sm px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-[0.98] shrink-0 cursor-pointer"
+          >
             Отримати посібник
           </button>
         </div>
