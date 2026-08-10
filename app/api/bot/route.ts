@@ -121,8 +121,8 @@ export async function handleTelegramUpdate(update: any) {
         } catch (_) { }
 
         const usdRate = await getUsdToUahRate();
-        // Рахуємо суму в грн: 9 USD * курс NBU * 1.01 (комерційна націнка ~1%) і округлюємо до найближчих 10 грн
-        const uahPrice = Math.round((9 * usdRate * 1.01) / 10) * 10;
+        // Рахуємо суму в грн: 9 USD * курс і округлюємо до найближчої гривні
+        const uahPrice = Math.round(9 * usdRate);
 
         const welcomeText =
           greetingLine +
@@ -376,13 +376,45 @@ async function getUsdToUahRate(): Promise<number> {
     return globalForExchange.cachedRate.rate;
   }
 
+  // Спробуємо спочатку стабільний ExchangeRate-API (не блокує хмарні IP-адреси)
   try {
     const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), 1200); // Тайм-аут 1.2 сек
+    const id = setTimeout(() => controller.abort(), 1500);
+
+    const res = await fetch("https://open.er-api.com/v6/latest/USD", {
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      },
+      next: { revalidate: 7200 }
+    });
+    clearTimeout(id);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.result === "success" && data.rates?.UAH) {
+        const rate = Number(data.rates.UAH);
+        if (rate > 20 && rate < 100) {
+          globalForExchange.cachedRate = { rate, timestamp: now };
+          return rate;
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Помилка отримання курсу з ExchangeRate-API:", err);
+  }
+
+  // Якщо перший спосіб не вдався, спробуємо резервний НБУ (з User-Agent)
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 1500);
 
     const res = await fetch("https://bank.gov.ua/NBUStatService/v1/statistcl/exchange?valcode=USD&json", {
       signal: controller.signal,
-      next: { revalidate: 7200 } // Кеш на рівні фетчу Next.js
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      },
+      next: { revalidate: 7200 }
     });
     clearTimeout(id);
 
@@ -397,9 +429,9 @@ async function getUsdToUahRate(): Promise<number> {
       }
     }
   } catch (err) {
-    console.error("Помилка отримання курсу долара:", err);
+    console.error("Помилка отримання курсу з НБУ:", err);
   }
 
-  // Дефолтний курс (якщо API недоступне або зависло)
-  return globalForExchange.cachedRate?.rate || 41.11; // 9 * 41.11 = ~370 грн
+  // Дефолтний курс (якщо обидва API недоступні або зависло)
+  return globalForExchange.cachedRate?.rate || 44.87; // 9 * 44.87 = ~404 грн
 }
