@@ -96,7 +96,7 @@ export async function handleTelegramUpdate(update: any) {
         const orderId = parts[1];
 
         let orderData = orderId ? ordersStore.get(orderId) : null;
-        
+
         if (orderData) {
           userSessions.set(chatId, {
             orderId,
@@ -107,7 +107,7 @@ export async function handleTelegramUpdate(update: any) {
         }
 
         const session = orderData || userSessions.get(chatId) || {};
-        
+
         // Привітання бота беремо ЛИШЕ з профілю Telegram (або просто "Вітаю!")
         const tgName = msg.from?.first_name ? escapeHtml(msg.from.first_name) : "";
         const greetingLine = tgName ? `<b>Вітаю, ${tgName}!</b>\n\n` : `<b>Вітаю!</b>\n\n`;
@@ -118,31 +118,44 @@ export async function handleTelegramUpdate(update: any) {
           const histRes = await fetch(
             `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-1&allowed_updates=["message"]`
           );
-        } catch (_) {}
+        } catch (_) { }
 
-        const welcomeText = 
+        const usdRate = await getUsdToUahRate();
+        // Рахуємо суму в грн: 9 USD * курс NBU * 1.01 (комерційна націнка ~1%) і округлюємо до найближчих 10 грн
+        const uahPrice = Math.round((9 * usdRate * 1.01) / 10) * 10;
+
+        const welcomeText =
           greetingLine +
           `Дякуємо за замовлення <b>Практичного посібника з ведення блогу</b>.\n\n` +
-          `💳 <b>Реквізити для оплати (9 $ / 370 грн):</b>\n` +
-          `• <b>ФОП:</b> Тетяна\n` +
-          `• <b>IBAN:</b> <code>UA123456789000000000000000000</code>\n` +
-          `<i>(натисніть на реквізити, щоб скопіювати)</i>\n\n\n\n` +
+          `💳 <b>Реквізити для оплати (9 $ / ${uahPrice} грн):</b>\n` +
+          `• <b>Картка:</b> <code>4323407004609409</code>\n` +
+          `• <b>Отримувач:</b> Заєць В.М.\n` +
+          `⚠️ <b>Важливо:</b> у призначенні платежу нічого не писати.\n` +
+          `<i>(натисніть на номер картки, щоб скопіювати)</i>\n\n\n\n` +
           `📍 <b>Після здійснення переказу надішліть, будь ласка, скріншот або PDF-файл квитанції прямо сюди у чат 👇</b>`;
 
-        await sendTelegramMessage(chatId, welcomeText);
+        const welcomeKeyboard = {
+          inline_keyboard: [
+            [
+              { text: "💬 Задати питання", url: "https://t.me/TanyaaZaec" }
+            ]
+          ]
+        };
+
+        await sendTelegramMessage(chatId, welcomeText, welcomeKeyboard);
         return;
       }
 
       // Квитанція (фото чи файл)
       if (msg.photo || msg.document) {
         const session = userSessions.get(chatId) || {};
-        
+
         await sendTelegramMessage(
           chatId,
           "<b>Дякуємо!</b> Квитанцію отримано та передано на перевірку.\nОчікуйте на підтвердження (зазвичай це займає 3–10 хвилин)."
         );
 
-        const caption = 
+        const caption =
           `🧾 <b>НОВА КВИТАНЦІЯ ПРО ОПЛАТУ!</b>\n\n` +
           `Перевірте платіж у банкінгу та натисніть підтвердження 👇`;
 
@@ -184,7 +197,7 @@ export async function handleTelegramUpdate(update: any) {
         const buyerChatId = data.replace("approve_", "");
 
         await answerCallbackQuery(callback.id, "✅ Оплату підтверджено!");
-        
+
         const originalCaption = callback.message?.caption || "";
         await editMessageCaption(
           callback.message.chat.id,
@@ -217,7 +230,7 @@ export async function handleTelegramUpdate(update: any) {
             body: formData,
           });
         } else {
-          const guideMessage = 
+          const guideMessage =
             `🎉 <b>Оплату успішно підтверджено!</b>\n\n` +
             `Ваш «Практичний посібник з ведення блогу для психологів» доступний за посиланням нижче:\n\n` +
             `📥 <a href="https://psy-landing.com/posibnyk_psychology.pdf">Завантажити посібник (PDF)</a>\n\n` +
@@ -240,9 +253,23 @@ export async function handleTelegramUpdate(update: any) {
           `${originalCaption}\n\n❌ <b>ОПЛАТУ ВІДХИЛЕНО (Адмін: ${escapeHtml(adminName)})</b>`
         );
 
+        const adminUsername = callback.from?.username;
+        const contactUrl = adminUsername
+          ? `https://t.me/${adminUsername.replace(/^@/, "")}`
+          : "https://t.me/TanyaaZaec";
+
+        const rejectKeyboard = {
+          inline_keyboard: [
+            [
+              { text: "💬 Дізнатися причину", url: contactUrl }
+            ]
+          ]
+        };
+
         await sendTelegramMessage(
           buyerChatId,
-          "На жаль, платіж за квитанцією не знайдено. Будь ласка, перевірте деталі або зверніться до нас для уточнення."
+          "На жаль, платіж за квитанцією не знайдено. Будь ласка, перевірте деталі або зверніться до нас для уточнення.",
+          rejectKeyboard
         );
         return;
       }
@@ -335,4 +362,44 @@ async function editMessageCaption(chatId: string | number, messageId: number, ca
       parse_mode: "HTML",
     }),
   });
+}
+
+// Кешування курсу валют
+const globalForExchange = globalThis as unknown as {
+  cachedRate?: { rate: number; timestamp: number };
+};
+
+async function getUsdToUahRate(): Promise<number> {
+  const now = Date.now();
+  // Кешуємо курс на 2 години (7200000 мс)
+  if (globalForExchange.cachedRate && now - globalForExchange.cachedRate.timestamp < 7200000) {
+    return globalForExchange.cachedRate.rate;
+  }
+
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 1200); // Тайм-аут 1.2 сек
+
+    const res = await fetch("https://bank.gov.ua/NBUStatService/v1/statistcl/exchange?valcode=USD&json", {
+      signal: controller.signal,
+      next: { revalidate: 7200 } // Кеш на рівні фетчу Next.js
+    });
+    clearTimeout(id);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data[0]?.rate) {
+        const rate = Number(data[0].rate);
+        if (rate > 20 && rate < 100) {
+          globalForExchange.cachedRate = { rate, timestamp: now };
+          return rate;
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Помилка отримання курсу долара:", err);
+  }
+
+  // Дефолтний курс (якщо API недоступне або зависло)
+  return globalForExchange.cachedRate?.rate || 41.11; // 9 * 41.11 = ~370 грн
 }
