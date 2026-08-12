@@ -70,13 +70,14 @@ export function ensurePollingStarted() {
             }
           }
         }
-      } catch (err) {
+      } catch {
         await new Promise((r) => setTimeout(r, 2000));
       }
     }
   })();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function handleTelegramUpdate(update: any) {
   try {
     // 1. Обробка повідомлень від покупців
@@ -95,7 +96,7 @@ export async function handleTelegramUpdate(update: any) {
         const parts = text.split(" ");
         const orderId = parts[1];
 
-        let orderData = orderId ? ordersStore.get(orderId) : null;
+        const orderData = orderId ? ordersStore.get(orderId) : null;
 
         if (orderData) {
           userSessions.set(chatId, {
@@ -106,8 +107,6 @@ export async function handleTelegramUpdate(update: any) {
           });
         }
 
-        const session = orderData || userSessions.get(chatId) || {};
-
         // Привітання бота беремо ЛИШЕ з профілю Telegram (або просто "Вітаю!")
         const tgName = msg.from?.first_name ? escapeHtml(msg.from.first_name) : "";
         const greetingLine = tgName ? `<b>Вітаю, ${tgName}!</b>\n\n` : `<b>Вітаю!</b>\n\n`;
@@ -115,10 +114,10 @@ export async function handleTelegramUpdate(update: any) {
         // Видаляємо кнопки зі всіх старих повідомлень у цьому чаті (5 останніх)
         // щоб не лишалась «приведена» кнопка «Надіслати квитанцію» від попередніх версій бота
         try {
-          const histRes = await fetch(
+          await fetch(
             `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-1&allowed_updates=["message"]`
           );
-        } catch (_) { }
+        } catch { }
 
         const usdRate = await getUsdToUahRate();
         // Рахуємо суму в грн: 9 USD * курс і округлюємо до найближчої гривні
@@ -148,7 +147,6 @@ export async function handleTelegramUpdate(update: any) {
 
       // Квитанція (фото чи файл)
       if (msg.photo || msg.document) {
-        const session = userSessions.get(chatId) || {};
 
         await sendTelegramMessage(
           chatId,
@@ -234,7 +232,7 @@ export async function handleTelegramUpdate(update: any) {
           const guideMessage =
             `🎉 <b>Оплату успішно підтверджено!</b>\n\n` +
             `Ваш «Практичний посібник для психологів» доступний за посиланням нижче:\n\n` +
-            `📥 <a href="https://psy-landing.com/%D0%9F%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D1%87%D0%BD%D0%B8%D0%B9%20%D0%BF%D0%BE%D1%81%D1%96%D0%B1%D0%BD%D0%B8%D0%BA%20%D0%B4%D0%BB%D1%8F%20%D0%BF%D1%81%D0%B8%D1%85%D0%BE%D0%BB%D0%BE%D0%B3%D1%96%D0%B2.pdf">Завантажити посібник (PDF)</a>\n\n` +
+            `📥 <a href="https://tanyazaiets.com.ua/%D0%9F%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D1%87%D0%BD%D0%B8%D0%B9%20%D0%BF%D0%BE%D1%81%D1%96%D0%B1%D0%BD%D0%B8%D0%BA%20%D0%B4%D0%BB%D1%8F%20%D0%BF%D1%81%D0%B8%D1%85%D0%BE%D0%BB%D0%BE%D0%B3%D1%96%D0%B2.pdf">Завантажити посібник (PDF)</a>\n\n` +
             `Бажаємо натхнення та приємного читання! ✨`;
 
           await sendTelegramMessage(buyerChatId, guideMessage);
@@ -303,6 +301,7 @@ function escapeHtml(str: string): string {
     .replace(/>/g, "&gt;");
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function sendTelegramMessage(chatId: string | number, text: string, keyboard?: any) {
   return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
@@ -316,6 +315,7 @@ async function sendTelegramMessage(chatId: string | number, text: string, keyboa
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function sendTelegramPhoto(chatId: string | number, photoFileId: string, caption: string, keyboard?: any) {
   return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
     method: "POST",
@@ -330,6 +330,7 @@ async function sendTelegramPhoto(chatId: string | number, photoFileId: string, c
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function sendTelegramDocument(chatId: string | number, docFileId: string, caption: string, keyboard?: any) {
   return fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
     method: "POST",

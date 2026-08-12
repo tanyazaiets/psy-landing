@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col justify-between">
-      <div>
+      <article>
         <Hero />
         <div className="w-full lg:px-[20%]">
           <ForWhom />
@@ -18,7 +18,7 @@ export default function Home() {
           <AboutAuthor />
           <PricingAndUpsell />
         </div>
-      </div>
+      </article>
       <Footer />
     </main>
   );

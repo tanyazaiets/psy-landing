@@ -34,7 +34,7 @@ export default function AboutAuthor() {
           <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 shrink-0 rounded-2xl overflow-hidden border-2 border-sage/20 shadow-md">
             <Image
               src="/author.jpg"
-              alt="Тетяна — контент-стратег"
+              alt="Тетяна — контент-стратег та автор посібника для психологів"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 192px, 224px"

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Download, Sparkles, Loader2 } from "lucide-react";
+import { ArrowRight, Download, Loader2 } from "lucide-react";
 
 export default function PricingAndUpsell() {
   const [name, setName] = useState("");
@@ -82,7 +82,7 @@ export default function PricingAndUpsell() {
           <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4 text-left mb-8">
             <div>
               <label className="block text-xs font-semibold text-text-secondary uppercase mb-1.5 ml-1">
-                Ваше ім'я *
+                Ваше ім&apos;я *
               </label>
               <input
                 type="text"
@@ -129,6 +129,7 @@ export default function PricingAndUpsell() {
               type="submit"
               disabled={loading}
               className="w-full bg-accent hover:bg-accent-hover text-white font-bold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-[0.98] text-base sm:text-lg mt-6 disabled:opacity-70"
+              aria-label="Надіслати форму та перейти до оплати"
             >
               {loading ? (
                 <>
@@ -188,6 +189,7 @@ export default function PricingAndUpsell() {
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto bg-bg-main hover:bg-sage/10 text-text-primary border border-sage/30 font-medium px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 active:scale-[0.98] inline-flex"
+            aria-label="Дізнатися більше про індивідуальний супровід у Telegram"
           >
             <svg className="w-4 h-4 fill-current text-sage" viewBox="0 0 24 24">
               <path d="M11.944 0C5.344 0 0 5.344 0 12c0 6.656 5.344 12 11.944 12 6.656 0 12-5.344 12-12 0-6.656-5.344-12-12-12zm5.787 8.23l-1.949 9.195c-.147.653-.532.815-1.077.51l-2.969-2.188-1.433 1.379c-.159.159-.292.292-.6.292l.213-3.023 5.502-4.971c.239-.213-.052-.332-.371-.12l-6.8 4.283-2.932-.917c-.638-.2-1.109-.502-.159-.877l11.449-4.41c.531-.2 1.002.121.821.84z"/>

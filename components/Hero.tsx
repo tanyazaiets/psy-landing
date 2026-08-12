@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 
 export default function Hero() {
@@ -17,7 +17,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-0 select-none pointer-events-none">
         <Image
           src="/hero-bg.jpg"
-          alt="Естетичний фон кабінету"
+          alt="Кабінет психолога - фон для практичного посібника з ведення блогу"
           fill
           priority
           sizes="100vw"
@@ -95,6 +95,7 @@ export default function Hero() {
           <button 
             onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
             className="bg-accent hover:bg-accent-hover text-white font-bold text-[11px] sm:text-sm px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-[0.98] shrink-0 cursor-pointer"
+            aria-label="Перейти до форми отримання посібника"
           >
             Отримати посібник
           </button>
