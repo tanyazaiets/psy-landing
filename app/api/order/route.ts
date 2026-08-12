@@ -37,6 +37,8 @@ export async function POST(request: Request) {
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
 
+    let debugInfo: any = {};
+
     // Відправляємо сповіщення в спільну Telegram-групу про створення замовлення
     if (botToken && adminChatId) {
       try {
@@ -51,7 +53,7 @@ export async function POST(request: Request) {
           `✉️ <b>Email:</b> ${safeEmail}\n\n` +
           `⏳ <b>Статус:</b> Клієнта перенаправлено в бота для оплати...`;
 
-        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -60,15 +62,35 @@ export async function POST(request: Request) {
             parse_mode: "HTML",
           }),
         });
-      } catch (tgError) {
+
+        const status = res.status;
+        const bodyText = await res.text();
+        debugInfo = {
+          status,
+          response: bodyText,
+          botToken: botToken ? `${botToken.substring(0, 10)}...` : "missing",
+          adminChatId: adminChatId || "missing"
+        };
+      } catch (tgError: any) {
         console.error("Помилка відправки сповіщення в Telegram:", tgError);
+        debugInfo = {
+          error: tgError?.message || String(tgError),
+          botToken: botToken ? `${botToken.substring(0, 10)}...` : "missing",
+          adminChatId: adminChatId || "missing"
+        };
       }
+    } else {
+      debugInfo = {
+        error: "Missing env variables",
+        botToken: botToken ? "set" : "missing",
+        adminChatId: adminChatId ? "set" : "missing"
+      };
     }
 
     // Посилання на бота з глибоким параметром /start ord_xxx
     const botLink = `https://t.me/PsyBlogGuideTestBot?start=${orderId}`;
 
-    return NextResponse.json({ success: true, botLink, orderId });
+    return NextResponse.json({ success: true, botLink, orderId, debugInfo });
   } catch (error) {
     console.error("Помилка при створенні замовлення:", error);
     return NextResponse.json(
