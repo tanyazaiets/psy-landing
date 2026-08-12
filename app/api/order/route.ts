@@ -65,6 +65,7 @@ export async function POST(request: Request) {
 
         const status = res.status;
         const bodyText = await res.text();
+        console.log("Telegram sendMessage Response status:", status, "body:", bodyText);
         debugInfo = {
           status,
           response: bodyText,
@@ -80,6 +81,7 @@ export async function POST(request: Request) {
         };
       }
     } else {
+      console.log("Telegram notification skipped: missing env variables. BotToken:", botToken ? "OK" : "missing", "AdminChatId:", adminChatId ? "OK" : "missing");
       debugInfo = {
         error: "Missing env variables",
         botToken: botToken ? "set" : "missing",
