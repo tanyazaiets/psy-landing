@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Arsenal_SC, Ysabeau_SC } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const fontHeading = Arsenal_SC({
@@ -64,6 +65,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         className="min-h-full flex flex-col bg-bg-viewport font-sans"
         suppressHydrationWarning
       >
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-13TE38NRLV"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-13TE38NRLV');
+          `}
+        </Script>
         <span dangerouslySetInnerHTML={{ __html: "<!-- icon created by popo2021 from Flaticon -->" }} style={{ display: "none" }} />
         {children}
       </body>
