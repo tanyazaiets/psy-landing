@@ -126,7 +126,7 @@ export async function handleTelegramUpdate(update: any) {
 
         const welcomeText =
           greetingLine +
-          `Дякуємо за замовлення <b>Практичного посібника з ведення блогу</b>.\n\n` +
+          `Дякуємо за замовлення <b>Практичного посібника для психологів</b>.\n\n` +
           `💳 <b>Реквізити для оплати (9 $ / ${uahPrice} грн):</b>\n` +
           `• <b>Картка:</b> <code>4323407004609409</code>\n` +
           `• <b>Отримувач:</b> Заєць В.М.\n` +
@@ -205,8 +205,8 @@ export async function handleTelegramUpdate(update: any) {
           `${originalCaption}\n\n✅ <b>ОПЛАТУ ПІДТВЕРДЖЕНО (Адмін: ${escapeHtml(adminName)})</b>`
         );
 
-        // Перевіряємо наявність файла posibnyk_psychology.pdf або guide.pdf у папці public
-        const pdfFileNames = ["posibnyk_psychology.pdf", "guide.pdf"];
+        // Перевіряємо наявність файла Практичний посібник для психологів.pdf, posibnyk_psychology.pdf або guide.pdf у папці public
+        const pdfFileNames = ["Практичний посібник для психологів.pdf", "posibnyk_psychology.pdf", "guide.pdf"];
         let foundPdfPath = "";
 
         for (const fileName of pdfFileNames) {
@@ -219,10 +219,11 @@ export async function handleTelegramUpdate(update: any) {
 
         if (foundPdfPath) {
           const fileBuffer = fs.readFileSync(foundPdfPath);
+          const fileName = path.basename(foundPdfPath);
           const formData = new FormData();
           formData.append("chat_id", buyerChatId);
-          formData.append("document", new Blob([fileBuffer], { type: "application/pdf" }), "posibnyk_psychology.pdf");
-          formData.append("caption", "🎉 <b>Оплату успішно підтверджено!</b>\n\nВаш «Практичний посібник з ведення блогу для психологів» у прикріпленому файлі вище.\n\nБажаємо натхнення та приємного читання! ✨");
+          formData.append("document", new Blob([fileBuffer], { type: "application/pdf" }), fileName);
+          formData.append("caption", "🎉 <b>Оплату успішно підтверджено!</b>\n\nВаш «Практичний посібник для психологів» у прикріпленому файлі вище.\n\nБажаємо натхнення та приємного читання! ✨");
           formData.append("parse_mode", "HTML");
 
           await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
@@ -232,8 +233,8 @@ export async function handleTelegramUpdate(update: any) {
         } else {
           const guideMessage =
             `🎉 <b>Оплату успішно підтверджено!</b>\n\n` +
-            `Ваш «Практичний посібник з ведення блогу для психологів» доступний за посиланням нижче:\n\n` +
-            `📥 <a href="https://psy-landing.com/posibnyk_psychology.pdf">Завантажити посібник (PDF)</a>\n\n` +
+            `Ваш «Практичний посібник для психологів» доступний за посиланням нижче:\n\n` +
+            `📥 <a href="https://psy-landing.com/%D0%9F%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D1%87%D0%BD%D0%B8%D0%B9%20%D0%BF%D0%BE%D1%81%D1%96%D0%B1%D0%BD%D0%B8%D0%BA%20%D0%B4%D0%BB%D1%8F%20%D0%BF%D1%81%D0%B8%D1%85%D0%BE%D0%BB%D0%BE%D0%B3%D1%96%D0%B2.pdf">Завантажити посібник (PDF)</a>\n\n` +
             `Бажаємо натхнення та приємного читання! ✨`;
 
           await sendTelegramMessage(buyerChatId, guideMessage);
