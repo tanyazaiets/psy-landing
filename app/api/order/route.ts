@@ -40,12 +40,16 @@ export async function POST(request: Request) {
     // Відправляємо сповіщення в спільну Telegram-групу про створення замовлення
     if (botToken && adminChatId) {
       try {
+        const safeName = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const safePhone = phone.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const safeEmail = (email || "не вказано").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
         const messageText = 
-          `📥 *Нове замовлення на сайті!*\n\n` +
-          `👤 *Ім'я:* ${name}\n` +
-          `📞 *Телефон:* ${phone}\n` +
-          `✉️ *Email:* ${email || "не вказано"}\n\n` +
-          `⏳ *Статус:* Клієнта перенаправлено в бота для оплати...`;
+          `📥 <b>Нове замовлення на сайті!</b>\n\n` +
+          `👤 <b>Ім'я:</b> ${safeName}\n` +
+          `📞 <b>Телефон:</b> ${safePhone}\n` +
+          `✉️ <b>Email:</b> ${safeEmail}\n\n` +
+          `⏳ <b>Статус:</b> Клієнта перенаправлено в бота для оплати...`;
 
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: "POST",
@@ -53,7 +57,7 @@ export async function POST(request: Request) {
           body: JSON.stringify({
             chat_id: adminChatId,
             text: messageText,
-            parse_mode: "Markdown",
+            parse_mode: "HTML",
           }),
         });
       } catch (tgError) {
